@@ -12,6 +12,11 @@ public class ShipmentPackage {
     protected Double length;
     protected Double width;
     protected Double maxWeight;
+    protected String heightUOM = "";
+    protected String weightUOM = "";
     protected Double tareWeight;
     protected Double totalWeight;
+    public Double getTotalVolume(){
+        return this.height * this.length * this.width;
+    }
 }
