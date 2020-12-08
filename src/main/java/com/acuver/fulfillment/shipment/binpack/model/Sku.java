@@ -10,6 +10,9 @@ public class Sku {
     protected Double height;
     protected Double length;
     protected Double width;
+    protected Double weight;
+    protected String heightUOM;
+    protected  String weightUOM;
     protected Boolean packAlone;
     protected Boolean fragile;
 }

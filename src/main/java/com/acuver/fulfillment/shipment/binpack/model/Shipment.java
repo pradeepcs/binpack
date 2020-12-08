@@ -8,6 +8,6 @@ import java.util.List;
 @Getter @Setter
 public class Shipment {
     protected String id;
-    protected List<ShipmentLine> shipmentLines;
+    protected List<Item> items;
     protected ShipmentPackage recommendedPackage;
 }

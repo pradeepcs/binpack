@@ -6,11 +6,11 @@
       "items": [
         {
           "skuId": "sku1",
-          "qty": 2.0
+          "qty": 1.0
         },
         {
           "skuId": "sku2",
-          "qty": 5.0
+          "qty": 1.0
         }
       ]
     }
@@ -37,7 +37,7 @@
   ],
   "skus": [
     {
-      "skuId": "sku1",
+      "id": "sku1",
       "height": 1.0,
       "length": 1.0,
       "width": 1.0,
@@ -46,7 +46,7 @@
       "isFragile": false
     },
     {
-      "skuId": "sku2",
+      "id": "sku2",
       "height": 1.0,
       "length": 1.0,
       "width": 1.0,

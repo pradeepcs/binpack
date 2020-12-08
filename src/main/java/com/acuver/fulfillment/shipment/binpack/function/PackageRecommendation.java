@@ -1,10 +1,14 @@
 package com.acuver.fulfillment.shipment.binpack.function;
 
-import com.acuver.fulfillment.shipment.binpack.model.PackageRecommendationRequest;
-import com.acuver.fulfillment.shipment.binpack.model.PackageRecommendationResponse;
-import com.acuver.fulfillment.shipment.binpack.model.ShipmentPackage;
+import com.acuver.fulfillment.shipment.binpack.model.*;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class PackageRecommendation implements
         RequestHandler<PackageRecommendationRequest, PackageRecommendationResponse> {
@@ -18,24 +22,26 @@ public class PackageRecommendation implements
     private PackageRecommendationResponse findSuitableBinPack(PackageRecommendationRequest request) {
         PackageRecommendationResponse response = new PackageRecommendationResponse();
 
-        request.getShipments().stream().forEach(shipment -> {
-            ShipmentPackage shipmentPackage = new ShipmentPackage();
-            if("shipmentPackage1".equals(shipment.getId())) {
-                shipmentPackage.setId("package1");
-                shipmentPackage.setType("carton");
-            } else if("shipmentPackage2".equals(shipment.getId())) {
-                shipmentPackage.setId("package2");
-                shipmentPackage.setType("carton");
-            } else {
-                shipmentPackage.setId("other");
-                shipmentPackage.setType("carton");
-            }
-            shipment.setRecommendedPackage(shipmentPackage);
+        List<PackageDimension> sortedAvailablePackage = PackageRecommendationUtils.getSortedShippingPackageOptions(request);
+
+        HashMap<String, Sku> mapSkuIdAndSku = new HashMap<>();
+        request.getSkus().forEach(sku -> {
+            mapSkuIdAndSku.put(sku.getId(), sku);
         });
-        response.setShipments(request.getShipments());
+        List<Shipment> responseShipment = new ArrayList<>();
+        request.getShipments().forEach(shipment -> {
+            PackageDimension requiredPackageDimension = PackageRecommendationUtils.getTotalWeightAndVolume(mapSkuIdAndSku, shipment);
+            PackageDimension availablePackage = PackageRecommendationUtils.getSuitablePackageOption(requiredPackageDimension, mapSkuIdAndSku, sortedAvailablePackage);
+            PackageRecommendationUtils.setRecommendedPackageInResponse(shipment, availablePackage);
+            shipment.getRecommendedPackage().setTotalWeight(BigDecimal.valueOf(
+                    Double.sum(requiredPackageDimension.getTotalWeight(), availablePackage.getTareWeight())).
+                    setScale(2, RoundingMode.HALF_UP).doubleValue());
+            responseShipment.add(shipment);
+
+        });
+        response.setShipments(responseShipment);
         return response;
     }
-
 
 
 }
