@@ -23,10 +23,9 @@ public class PackageRecommendationUtils {
         List<Double> qtyWiseTotalHeightList = new ArrayList<>();
 
 
-
         for (Item item : shipment.getItems()) {
             Sku sku = skuIdToSkuMap.get(item.getSkuId());
-            Double qty=item.getQty();
+            Double qty = item.getQty();
 //            if(sku.isHazardousMaterial()){
 //                setHazardousItemFlag = true;
 //            }
@@ -59,10 +58,10 @@ public class PackageRecommendationUtils {
         return packageDimension;
     }
 
-    static List<PackageDimension> getSortedShippingPackageOptions(PackageRecommendationRequest request){
+    static List<PackageDimension> getSortedShippingPackageOptions(PackageRecommendationRequest request) {
         List<PackageDimension> optionPackageDimensions = new ArrayList<>();
-        request.getAvailablePackages().forEach(shipmentPackage->{
-            PackageDimension optionPackageDimension =getPackageDimensionForPackageOption(shipmentPackage);
+        request.getAvailablePackages().forEach(shipmentPackage -> {
+            PackageDimension optionPackageDimension = getPackageDimensionForPackageOption(shipmentPackage);
             optionPackageDimensions.add(optionPackageDimension);
         });
         optionPackageDimensions.sort(Comparator.comparing(PackageDimension::getTotalVolume).thenComparing(PackageDimension::getTotalWeight));
@@ -80,7 +79,7 @@ public class PackageRecommendationUtils {
         packageDimension.setHeightUOM(packageOptionDimensions.getHeightUOM());
         packageDimension.setTotalWeight(packageOptionDimensions.getMaxWeight());
         packageDimension.setPackageType(packageOptionDimensions.getId());
-      //  packageDimension.setSupportsHazardous((Boolean) packageOptionDimensions.get("hazardous"));
+        //  packageDimension.setSupportsHazardous((Boolean) packageOptionDimensions.get("hazardous"));
         if (packageOptionDimensions.getTareWeight() != null) {
             packageDimension.setTareWeight(packageOptionDimensions.getTareWeight());
         }
@@ -102,7 +101,7 @@ public class PackageRecommendationUtils {
         return null;
     }
 
-    static Boolean packageSupportsItem(){
+    static Boolean packageSupportsItem() {
         return true;
     }
 
@@ -120,11 +119,11 @@ public class PackageRecommendationUtils {
     }
 
 
-    private static  boolean canStackOnLWH (Double lengthDimension, Double widthDimension, Double heightDimension,
-                                           PackageDimension packageOptionDimension ){
+    private static boolean canStackOnLWH(Double lengthDimension, Double widthDimension, Double heightDimension,
+                                         PackageDimension packageOptionDimension) {
 
-        List <Double> packageDimensions = new LinkedList<>();
-        List <Double> itemDimensions = new LinkedList<>();
+        List<Double> packageDimensions = new LinkedList<>();
+        List<Double> itemDimensions = new LinkedList<>();
 
         itemDimensions.add(lengthDimension);
         itemDimensions.add(widthDimension);
@@ -140,6 +139,18 @@ public class PackageRecommendationUtils {
 
         return (itemDimensions.get(0) <= packageDimensions.get(0) && itemDimensions.get(1) <= packageDimensions.get(1)
                 && itemDimensions.get(2) <= packageDimensions.get(2));
+    }
+
+    static void setRecommendedPackageInResponse(Shipment shipment,
+                                                PackageDimension packageDimensions) {
+        ShipmentPackage shipmentPackage1 = new ShipmentPackage();
+        shipmentPackage1.setLength(packageDimensions.getMaxLength());
+        shipmentPackage1.setWidth(packageDimensions.getMaxWidth());
+        shipmentPackage1.setHeight(packageDimensions.getTotalHeight());
+        shipmentPackage1.setHeightUOM(packageDimensions.getHeightUOM());
+        shipmentPackage1.setMaxWeight(packageDimensions.getTotalWeight() + packageDimensions.getTareWeight());
+        shipmentPackage1.setId(packageDimensions.getPackageType());
+        shipment.setRecommendedPackage(shipmentPackage1);
     }
 
 
