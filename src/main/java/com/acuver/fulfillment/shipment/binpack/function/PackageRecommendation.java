@@ -26,6 +26,7 @@ public class PackageRecommendation implements
         request.getSkus().forEach(sku -> {
             mapSkuIdAndSku.put(sku.getId(),sku);
         });
+        List<Shipment> responseShipment= new ArrayList<>();
         request.getShipments().forEach(shipment -> {
                 PackageDimension requiredPackageDimension = PackageRecommendationUtils.getTotalWeightAndVolume(mapSkuIdAndSku,shipment);
                 PackageDimension availablePackage = PackageRecommendationUtils.getSuitablePackageOption(requiredPackageDimension, mapSkuIdAndSku,sortedAvailablePackage);
@@ -35,8 +36,11 @@ public class PackageRecommendation implements
                         Double.sum(requiredPackageDimension.getTotalWeight(), availablePackage.getTareWeight())).
                         setScale(2, RoundingMode.HALF_UP).doubleValue());
                 System.out.print(shipment);
+            responseShipment.add(shipment);
 
             });
+        response.setShipments(responseShipment);
+
 
 
 
@@ -68,6 +72,7 @@ public class PackageRecommendation implements
         shipmentPackage1.setHeight(packageDimensions.getTotalHeight());
         shipmentPackage1.setHeightUOM(packageDimensions.getHeightUOM());
         shipmentPackage1.setMaxWeight(packageDimensions.getTotalWeight() + packageDimensions.getTareWeight());
+        shipmentPackage1.setId(packageDimensions.getPackageType());
         shipment.setRecommendedPackage(shipmentPackage1);
         //shipmentPackage.setPackageType(packageDimensions.getPackageType());
     }

@@ -79,6 +79,7 @@ public class PackageRecommendationUtils {
         packageDimension.setTotalWidth(packageOptionDimensions.getWidth());
         packageDimension.setHeightUOM(packageOptionDimensions.getHeightUOM());
         packageDimension.setTotalWeight(packageOptionDimensions.getMaxWeight());
+        packageDimension.setPackageType(packageOptionDimensions.getId());
       //  packageDimension.setSupportsHazardous((Boolean) packageOptionDimensions.get("hazardous"));
         if (packageOptionDimensions.getTareWeight() != null) {
             packageDimension.setTareWeight(packageOptionDimensions.getTareWeight());
